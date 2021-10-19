@@ -65,6 +65,6 @@ class ImageUploader():
 
 if __name__ == "__main__":
     image_uploader = ImageUploader()
-    image_uploader.set_imgur_api('6b75af0f94d844f', '0f45fb3d25a709ee76aabd9d4d72957b8c839985')
+    image_uploader.set_imgur_api('6b75af0f94d844f', '2100e84114950a3e5f567de219717ff596423c77')
     upload_result = image_uploader.upload_image_imgur('/home/leisik/pictures/Wallpapers/annie-spratt-r9eIL7jtenc-unsplash.jpg')
     print(upload_result)

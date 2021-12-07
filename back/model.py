@@ -18,6 +18,8 @@ class Image():
             print('table has been created.')
 
     def save_image(self, img, local_path, remote_url):
+        """将图片存到数据库中, 需要提供本地路径, 以及图床地址
+        """
         img_blob = sqlite3.Binary(img)
         try:
             sql = 'INSERT INTO tbl_image (image, local_path, remote_url) VALUES (?,?,?);'
@@ -42,8 +44,10 @@ class Image():
         return cu.fetchall()
 
 if __name__ == "__main__":
+    # 读取图片 使用matplotlib
     img = mp.imread('/home/leisik/pictures/Wallpapers/jeremy-bishop-uAfZBP-GtiA-unsplash.jpg')
     img_db = Image('my.db')
+    img_db.save_image(img, 'test path', 'test url')
     print(img_db.get_images_count())
     print(img_db.get_all_images())
     # img_db.save_image(img, 'local_path', 'remote_url')

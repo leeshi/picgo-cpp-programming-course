@@ -1,1 +1,2 @@
 imgurpython
+pillow

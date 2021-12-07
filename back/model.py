@@ -25,7 +25,6 @@ class Image():
             sql = 'INSERT INTO tbl_image (image, local_path, remote_url) VALUES (?,?,?);'
             self.con.execute(sql, (img_blob, local_path, remote_url))
             self.con.commit()
-            self.con.close()
         except:
             print('Failed to write image [{0}]'.format(local_path))
 

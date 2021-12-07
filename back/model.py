@@ -9,8 +9,13 @@ class Image():
     def __init__(self, db_name) -> None:
         self.con = sqlite3.connect(db_name)
         # 不存在则自动创建
-        if not os.path.exists(db_name):
-            self.con.execute('''CREATE TABLE tbl_image (id integer PRIMARY KEY AUTO_INCREMENT, image BLOB NOT NULL, local_path TEXT NOT NULL, remote_url TEXT NOT NULL);''')
+        try:
+            self.con.execute('''CREATE TABLE tbl_image (
+                    image BLOB NOT NULL,
+                    local_path TEXT NOT NULL,
+                    remote_url TEXT NOT NULL);''')
+        except:
+            print('table has been created.')
 
     def save_image(self, img, local_path, remote_url):
         img_blob = sqlite3.Binary(img)
@@ -38,7 +43,7 @@ class Image():
 
 if __name__ == "__main__":
     img = mp.imread('/home/leisik/pictures/Wallpapers/jeremy-bishop-uAfZBP-GtiA-unsplash.jpg')
-    img_db = Image('./tbl_image.db')
+    img_db = Image('my.db')
     print(img_db.get_images_count())
     print(img_db.get_all_images())
     # img_db.save_image(img, 'local_path', 'remote_url')

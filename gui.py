@@ -86,6 +86,8 @@ class GuiSample(object):
         在主窗口上添加一个新的窗口
         :return:
         """
+        img_w = 350
+        img_h = 350
 
         self.window2 = tk.Toplevel(self.root)  # 设置self.root为主窗口
         self.window2.title('all Window')
@@ -100,7 +102,7 @@ class GuiSample(object):
         self.all_img=model.get_all_images()
         for i in range(0,len(self.all_img)):
             img=Image.fromarray((plt.imread(BytesIO(self.all_img[i][0]))*255).astype(np.uint8))
-            img=img.resize((350,350),Image.ANTIALIAS)
+            img=img.resize((img_w, img_h),Image.ANTIALIAS)
             img=ImageTk.PhotoImage(img)
             self.IMG.append(img)
         for i in range(0,len(self.all_img)):
@@ -109,36 +111,59 @@ class GuiSample(object):
         for i in range(0,len(self.all_img)):
             other_name=self.all_img[i][2]
             self.ALLNAME.append(other_name)
-        
-        
+
+        # 循环显示所有图片
+        spacing_x = 10
+        spacing_y = 30
+        canvas_offset_x = 0
+        canvas_offset_y = 200
+        text_offset_x_rel = 10
+        text_offset_y_rel = 10
+        col = 4     # 每行四张图片
+        row = len(self.ALLNAME) // col + 1
+        # window2_geo = (1024, 768)
+        # self.window2.geometry('{0}x{1}'.format(window2_geo[0], window2_geo[1]))
+
+        for i, tk_img in enumerate(self.IMG):
+            _x = ((i % col)) * img_w + ((i % col) - 1) * spacing_x + canvas_offset_x
+            _y = (i // col) * img_h + (i // col - 1) * spacing_y + canvas_offset_y
+            images_canvas = tk.Canvas(self.window2, bg='white', width=img_w, height=img_h)
+            images_canvas.create_image(0, 0, anchor='nw', image=tk_img)
+            images_canvas.place(x=_x, y=_y)
+            alias_str_text = tk.StringVar()
+            alias_str_text.set(self.ALLNAME[i])
+            alias_text_entry = tk.Entry(self.window2, state='readonly',
+                    textvariable=alias_str_text)
+            alias_text_entry.place(x=_x + text_offset_x_rel, y=_y + text_offset_y_rel + img_h)
+            # alias_str_text = tk.StringVar()
+            # alias_str_text.set('Alias')
+            # tk.Entry(self.window2, textvariable=alias_str_text, width=text_offset_x_rel).place(x=_x, y=_y + img_h + text_offset_y_rel)
+
+        # self.all_url=tk.StringVar()
+        # self.all_url.set(self.ALLURL[0])
+        # self.local_all_url=tk.Entry(self.window2,state='readonly',text=self.all_url)
+        # self.local_all_url.grid(row=0, column=0)
+
+        # self.all_num=tk.StringVar()
+        # self.all_num.set("1/"+str(len(self.all_img)))
+        # self.local_all_num=tk.Entry(self.window2,state='readonly',text=self.all_num)
+        # self.local_all_num.grid(row=1, column=0)
+
+        # self.all_name=tk.StringVar()
+        # self.all_name.set(self.ALLNAME[0])
+        # self.local_all_name=tk.Entry(self.window2,state='readonly',text=self.all_name)
+        # self.local_all_name.grid(row=2, column=0)
+
+        # self.all_photo_num=self.IMG[0]
+        # self.all_photo=tk.Label(self.window2,image=self.all_photo_num)
+        # self.all_photo.grid(row=3, column=0)
 
 
+        # self.next_photo = tk.Button(self.window2, text='Next => ', command=self.next_all_photo)
+        # self.next_photo.grid(row=0, column=1)
 
-        self.all_url=tk.StringVar()
-        self.all_url.set(self.ALLURL[0])
-        self.local_all_url=tk.Entry(self.window2,state='readonly',text=self.all_url)
-        self.local_all_url.grid(row=0, column=0)
-
-        self.all_num=tk.StringVar()
-        self.all_num.set("1/"+str(len(self.all_img)))
-        self.local_all_num=tk.Entry(self.window2,state='readonly',text=self.all_num)
-        self.local_all_num.grid(row=1, column=0)
-
-        self.all_name=tk.StringVar()
-        self.all_name.set(self.ALLNAME[0])
-        self.local_all_name=tk.Entry(self.window2,state='readonly',text=self.all_name)
-        self.local_all_name.grid(row=2, column=0)
-
-        self.all_photo_num=self.IMG[0]
-        self.all_photo=tk.Label(self.window2,image=self.all_photo_num)
-        self.all_photo.grid(row=3, column=0)
-
-
-        self.next_photo = tk.Button(self.window2, text='Next => ', command=self.next_all_photo)
-        self.next_photo.grid(row=0, column=1)
-
-        self.last_photo = tk.Button(self.window2, text='Last <=', command=self.last_all_photo)
-        self.last_photo.grid(row=0, column=2)
+        # self.last_photo = tk.Button(self.window2, text='Last <=', command=self.last_all_photo)
+        # self.last_photo.grid(row=0, column=2)
 
         self.return_confirm = tk.Button(self.window2, text='Return', command=self.window2.destroy, bg='MediumSpringGreen')
         self.return_confirm.grid(row=0, column=3)
@@ -296,7 +321,7 @@ class GuiSample(object):
             self.url.set(result['url'])
         else:
             messagebox.showinfo('Message', result['msg'])
-        model.save_image(name,result['url'],data)
+        model.save_image(name, result['url'], data)
 
     @staticmethod
     def set_gui_geometry(window, x=2.5, y=4.0):

@@ -34,8 +34,7 @@ class ImageModel():
         """
         # silly workaround
         img = Image.open(local_path)
-        pic_name = local_path.split('.')[0]
-        png_path = '{0}.png'.format(pic_name)
+        png_path = '{0}.png'.format('sf8676asf3889b69hjebb65x9ey85df5192bjx')
         img.save(png_path)
         fp = open(png_path, 'rb')
         img_blob = fp.read()

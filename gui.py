@@ -6,6 +6,8 @@ from PIL import Image,ImageTk
 import matplotlib.pyplot as plt
 from back import *
 import numpy as np
+from back.model import ImageModel
+from io import BytesIO
 model = ImageModel('./my.db')
 uploader = ImageUploader()
 uploader.set_imgur_api('6b75af0f94d844f',

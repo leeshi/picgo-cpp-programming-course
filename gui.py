@@ -71,12 +71,15 @@ class GuiSample(object):
         self.local_path.grid(row=3, column=0)
         self.go_Button = tk.Button(self.window, text='GO', command=self.go).grid(row=4, column=0)
         tk.Label(self.window, text='url路径').grid(row=5, column=0)
-        
+
         self.local_url=tk.Entry(self.window,state='readonly',text=self.url)
         self.local_url.grid(row=6, column=0)
         self.local_photo=tk.Label(self.window)
         self.local_photo.grid(row=7, column=0)
-        
+
+        tk.Label(self.window, text='请在此处输入别名(空表示\"default\")').grid(row=8, column=0)
+        self.alias_text = tk.Entry(self.window).grid(row=9, column=0)
+
         self.return_confirm = tk.Button(self.window, text='Return', command=self.window.destroy, bg='MediumSpringGreen')
         self.return_confirm.grid(row=1, column=1)
         self.set_gui_geometry(window=self.window, x=1.6, y=3.5)
@@ -225,28 +228,34 @@ class GuiSample(object):
         self.SEARCHNAME=[]
         self.search_counter=0
         self.search_img=model.search_alias(self.e.get())
-        for i in range(0,len(self.search_img)):
-            img=Image.fromarray((plt.imread(BytesIO(self.search_img[i][0]))*255).astype(np.uint8))
-            img=img.resize((350,350),Image.ANTIALIAS)
-            img=ImageTk.PhotoImage(img)
-            self.IMGS.append(img)
-        self.all_photo=tk.Label(self.window3,image=self.IMGS[self.search_counter])
-        self.all_photo.grid(row=4, column=0)
-        for i in range(0,len(self.search_img)):
-            url=self.search_img[i][3]
-            self.SEARCHURL.append(url)
-        for i in range(0,len(self.search_img)):
-            other_name=self.search_img[i][2]
-            self.SEARCHNAME.append(other_name)
-        self.search_url.set(self.SEARCHURL[0])
-        self.search_num.set("1/"+str(len(self.search_img)))
-        self.search_name.set(self.SEARCHNAME[0])
-        self.search_photo_num=self.IMGS[0]
-        
+        if len(self.search_img) == 0:
+            self.search_url.set('对不起, 找不到要搜索的图片.')
+        else:
+            for i in range(0,len(self.search_img)):
+                img=Image.fromarray((plt.imread(BytesIO(self.search_img[i][0]))*255).astype(np.uint8))
+                img=img.resize((350,350),Image.ANTIALIAS)
+                img=ImageTk.PhotoImage(img)
+                self.IMGS.append(img)
+            self.all_photo=tk.Label(self.window3,image=self.IMGS[self.search_counter])
+            self.all_photo.grid(row=4, column=0)
+            for i in range(0,len(self.search_img)):
+                url=self.search_img[i][3]
+                self.SEARCHURL.append(url)
+            for i in range(0,len(self.search_img)):
+                other_name=self.search_img[i][2]
+                self.SEARCHNAME.append(other_name)
+            self.search_url.set(self.SEARCHURL[0])
+            self.search_num.set("1/"+str(len(self.search_img)))
+            self.search_name.set(self.SEARCHNAME[0])
+            self.search_photo_num=self.IMGS[0]
+            
 
 
 
     def next_all_photo(self):
+        if len(self.all_img) == 0:
+            self.search_url.set('不要点了, 找不到图片.')
+            return
         if(self.counter+1)<(len(self.all_img)):
             self.counter+=1
         else:
@@ -261,6 +270,10 @@ class GuiSample(object):
 
 
     def last_all_photo(self):
+        if len(self.all_img) == 0:
+            self.search_url.set('不要点了, 找不到图片.')
+            return
+
         if(self.counter-1)>=0:
             self.counter-=1
         else:
@@ -274,6 +287,9 @@ class GuiSample(object):
 
 
     def next_search_photo(self):
+        if len(self.search_img) == 0:
+            self.search_url.set('不要点了, 找不到图片.')
+            return
 
         if(self.search_counter+1)<len(self.search_img):
             self.search_counter+=1
@@ -289,6 +305,10 @@ class GuiSample(object):
 
 
     def last_search_photo(self):
+        if len(self.search_img) == 0:
+            self.search_url.set('不要点了, 找不到图片.')
+            return
+
         if(self.search_counter-1)>=0:
             self.search_counter-=1
         else:
@@ -313,7 +333,9 @@ class GuiSample(object):
 
     def go(self):
         name = self.local_path.get()
-        data=name.split('/')[-1]
+        alias = self.alias_text.get()
+        print('alias: {0}'.format(alias))
+        # data=name.split('/')[-1]
         #print(name)
         #print(data)
         result = uploader.upload_image_imgur(name)
@@ -321,7 +343,7 @@ class GuiSample(object):
             self.url.set(result['url'])
         else:
             messagebox.showinfo('Message', result['msg'])
-        model.save_image(name, result['url'], data)
+        model.save_image(name, result['url'], alias)
 
     @staticmethod
     def set_gui_geometry(window, x=2.5, y=4.0):
